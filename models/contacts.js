@@ -1,6 +1,12 @@
-// const fs = require('fs/promises')
+const fs = require('fs/promises')
+const path = require("path");
+const contactPatch = path.resolve("./contacts.json");
 
-const listContacts = async () => {}
+const listContacts = async () => {
+  fs.readFile(contactPatch)
+  .then((data) =>  {return JSON.parse(data)})
+  .catch((err) => console.log(err.message));
+}
 
 const getContactById = async (contactId) => {}
 
