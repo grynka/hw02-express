@@ -15,14 +15,14 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params
+  const { contactId } = req.params;
   const contacts = await contactsOperation.getContactById(contactId);
   res.json({
     status: "success",
-    code: contacts.length > 0  ? 200 : 404,
-     data: {
-      resault: contacts.length > 0  ?  contacts : {message: "Not found"},
-    }
+    code: contacts.length > 0 ? 200 : 404,
+    data: {
+      resault: contacts.length > 0 ? contacts : { message: "Not found" },
+    },
   });
 });
 
@@ -38,24 +38,29 @@ router.post("/", async (req, res, next) => {
 });
 
 router.delete("/:contactId", async (req, res, next) => {
-  const { contactId } = req.params
+  const { contactId } = req.params;
   await contactsOperation.removeContact(contactId);
   res.json({
     status: "success",
     code: 201,
-    data: {"message": "contact deleted"},
+    data: { message: "contact deleted" },
   });
 });
 
 router.put("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
   const body = req.query;
-  await contactsOperation.updateContact(body, contactId);
-  res.json({
-    status: "success",
-    code: 201,
-    data: {"message": "contact deleted"},
-  });
+  if (Object.keys(body).length !== 0) {
+  const contacts =  await contactsOperation.updateContact(contactId, body);
+    res.json({
+      status: "success",
+      code: contacts.length > 0 ? 201 : 400,
+      data: {
+        resault: contacts.length > 0 ? contacts : { message: "Not found" },
+      },
+    });
+  } else
+  res.status(400).json({message: "missing fields"});
 });
 
 module.exports = router;
