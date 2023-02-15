@@ -38,11 +38,24 @@ router.post("/", async (req, res, next) => {
 });
 
 router.delete("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  const { contactId } = req.params
+  await contactsOperation.removeContact(contactId);
+  res.json({
+    status: "success",
+    code: 201,
+    data: {"message": "contact deleted"},
+  });
 });
 
 router.put("/:contactId", async (req, res, next) => {
-  res.json({ message: "template message" });
+  const { contactId } = req.params;
+  const body = req.query;
+  await contactsOperation.updateContact(body, contactId);
+  res.json({
+    status: "success",
+    code: 201,
+    data: {"message": "contact deleted"},
+  });
 });
 
 module.exports = router;

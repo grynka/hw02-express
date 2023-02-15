@@ -19,7 +19,7 @@ const getContactById = async (contactId) => {
   try {
     const data = await fs.readFile(contactPatch);
     const result = JSON.parse(data);
-    return result.filter((item) => item.id === contactId);
+    return result.filter((contact) => contact.id.toString() === contactId);
   }
 
     catch(error) {
@@ -29,19 +29,21 @@ const getContactById = async (contactId) => {
  }
 
 const removeContact = async (contactId) => {
-  fs.readFile(contactPatch)
-    .then((data) => {
-      const contacts = JSON.parse(data);
-      const newContacts = contacts.filter((contact) => contact.id !== contactId);
-      fs.writeFile(contactPatch, JSON.stringify(newContacts))
-        .then(() => {
-          console.log("Remove Success contact " + contactId);
-        })
-        .catch((err) => {
-          console.log("Remove Failed: " + err);
-        });
-    })
-    .catch((error) => console.error(error.message));
+  try {
+    const data = await fs.readFile(contactPatch);
+    let resault = JSON.parse(data);
+    resault = resault.filter((contact) => contact.id.toString() !== contactId);
+    console.log(resault)
+    await fs.writeFile(contactPatch, JSON.stringify(resault))
+    .catch((err) => {
+      console.log("Remove Failed: " + err);
+    });
+  }
+
+    catch(error) {
+      error.message = "Not found"
+      throw error;
+    }
 }
 
 const addContact = async (body) => {
@@ -70,7 +72,15 @@ const addContact = async (body) => {
     }
 }
 
-const updateContact = async (contactId, body) => {}
+const updateContact = async (contactId, body) => {
+  let contacts = await listContacts()
+  contacts = contacts.map((contact) => (
+  contact.id.toString() === contactId
+  ? {...contact, ...body} 
+  : contact
+  ))
+  console.log(contacts)
+}
 
 module.exports = {
   listContacts,
