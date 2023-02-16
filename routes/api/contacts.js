@@ -39,11 +39,13 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/:contactId", async (req, res, next) => {
   const { contactId } = req.params;
-  await contactsOperation.removeContact(contactId);
+  const contacts =  await contactsOperation.removeContact(contactId);
   res.json({
     status: "success",
     code: 201,
-    data: { message: "contact deleted" },
+    data: {
+      resault: contacts ? contacts : { message: "Not found" },
+    },
   });
 });
 
@@ -54,9 +56,9 @@ router.put("/:contactId", async (req, res, next) => {
   const contacts =  await contactsOperation.updateContact(contactId, body);
     res.json({
       status: "success",
-      code: contacts.length > 0 ? 201 : 400,
+      code: contacts ? 201 : 400,
       data: {
-        resault: contacts.length > 0 ? contacts : { message: "Not found" },
+        resault: contacts ? contacts : { message: "Not found" },
       },
     });
   } else
