@@ -3,42 +3,29 @@ const path = require("path");
 const contactPatch = path.resolve("models/contacts.json");
 
 const listContacts = async () => {
-  try {
-    const data = await fs.readFile(contactPatch);
-    const result = JSON.parse(data);
-    return result;
-  } catch (error) {
-    error.message = "file reading error";
-    throw error;
-  }
+  const data = await fs.readFile(contactPatch);
+  return JSON.parse(data);
 };
 
 const getContactById = async (contactId) => {
-  try {
-    const contacts = await listContacts();
-    return contacts.filter((contact) => contact.id.toString() === contactId);
-  } catch (error) {
-    error.message = "Not found";
-    throw error;
-  }
+  const contacts = await listContacts();
+  const result = contacts.find(
+    (contact) => contact.id.toString() === contactId
+  );
+  return result || null;
 };
 
 const removeContact = async (contactId) => {
-  try {
-    const contacts = await listContacts();
-    const index = contacts.findIndex(
-      (contact) => contact.id.toString() === contactId
-    );
-    if (index === -1) {
-      return null
-    }
-    const[resault] = contacts.splice(index, 1)
-    await fs.writeFile(contactPatch, JSON.stringify(contacts, null, 2));
-    return resault
-  } catch (error) {
-    error.message = "Not found";
-    throw error;
+  const contacts = await listContacts();
+  const index = contacts.findIndex(
+    (contact) => contact.id.toString() === contactId
+  );
+  if (index === -1) {
+    return null;
   }
+  const [resault] = contacts.splice(index, 1);
+  await fs.writeFile(contactPatch, JSON.stringify(contacts, null, 2));
+  return resault;
 };
 
 const addContact = async (body) => {
@@ -66,10 +53,9 @@ const updateContact = async (contactId, body) => {
     (contact) => contact.id.toString() === contactId
   );
   if (index === -1) {
-    return null
+    return null;
   }
   contacts[index] = { ...contacts[index], ...body };
-  console.log(contacts[index]);
   await fs.writeFile(contactPatch, JSON.stringify(contacts, null, 2));
   return contacts[index];
 };
