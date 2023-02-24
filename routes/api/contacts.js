@@ -2,6 +2,8 @@ const express = require("express");
 const contactsOperation = require("../../models/contacts");
 const router = express.Router();
 const Joi = require("joi");
+const {Contact} = require("../../models/contact")
+
 
 const HttpError = require("../../helpers/HttpError");
 
@@ -19,8 +21,8 @@ const updateSchema = Joi.object({
 
 router.get("/", async (req, res, next) => {
   try {
-    const contacts = await contactsOperation.listContacts();
-    res.status(200).json({ contacts });
+    const contacts = await Contact.find();
+    res.status(200).json( contacts );
   } catch (error) {
     next(error);
   }
@@ -29,7 +31,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:contactId", async (req, res, next) => {
   try {
     const { contactId } = req.params;
-    const contacts = await contactsOperation.getContactById(contactId);
+    const contacts = await Contact.findById(contactId);
     if (!contacts) {
       throw HttpError(404, "Not found");
     }
@@ -41,11 +43,10 @@ router.get("/:contactId", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { error } = contactsSchema.validate(req.body);
-    if (error) {
-      throw HttpError(400, error.message);
+     const contacts = await Contact.create(req.body);
+     if (!contacts) {
+      throw HttpError(400, "Not found");
     }
-    const contacts = await contactsOperation.addContact(req.body);
     res.status(201).json({ contacts });
   } catch (error) {
     next(error);
