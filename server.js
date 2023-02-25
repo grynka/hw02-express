@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 
 const PORT = 3000;
-const HOST = 'mongodb+srv://grynka:230888@cluster0.s6bvtdk.mongodb.net/db-contacts';
+const {HOST} = process.env;
 
 const connection = mongoose.connect(HOST, {
   promiseLibrary: global.Promise,
