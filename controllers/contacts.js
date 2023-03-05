@@ -3,7 +3,15 @@ const { HttpError, ctrlWrapper } = require("../helpers");
 
 
 const listContacts = async (req, res) => {
-  const data = await Contact.find({});
+  const {_id: owner} = req.user;
+  const {page=1, limit=20, favorite=null} = req.query;
+  const skip = (page-1)*limit
+  let filter = { };
+  if (favorite) {
+    filter = {favorite}
+  }
+  console.log(filter)
+  const data = await Contact.find({owner, ...filter}, {}, {skip, limit});
   res.json(data);
 };
 
@@ -28,7 +36,9 @@ const removeContact = async (req, res) => {
 };
 
 const addContact = async (req, res) => {
-  const contacts = await Contact.create(req.body);
+  const {_id : owner} = req.user
+  console.log(owner, req.body)
+  const contacts = await Contact.create({...req.body, owner});
   res.status(201).json(contacts);
 };
 
